@@ -1,27 +1,27 @@
 import PropTypes from 'prop-types';
 import css from './ContactsList.module.css';
-import { useDispatch } from 'react-redux';
-import { deleteContact } from '../../redux/ContactsSlice'
+import { useDeleteContactMutation } from "../../redux/ContactsSlice";
 
-function Contact({ name, number, idx, id }) {
-  const dispatch = useDispatch();
+export function Contact({ contact }){
+  const [deleteContact] = useDeleteContactMutation();
   return (
     <li className={css.item}>
-      <p>
-        {idx + 1} - {name}: {number}
+        <p>
+        {contact.name}: {contact.phone}
       </p>
-      <button type="button" className={css.button} onClick={() => dispatch(deleteContact(id))}>
+      <button type="button" className={css.button} onClick={() => deleteContact(contact.id)}>
         Delete
       </button>
     </li>
   );
-}
+};
+
 Contact.propTypes = {
   options: PropTypes.shape({
+    createdAt: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    number: PropTypes.number.isRequired,
-    idx: PropTypes.number.isRequired,
+    phone: PropTypes.number.isRequired,
+    id: PropTypes.number.isRequired,
   }),
 };
 
-export default Contact;

@@ -1,27 +1,27 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { setFilter } from '../../redux/FilterSlice';
 import css from './Filter.module.css';
+import { nanoid } from 'nanoid';
+import PropTypes from 'prop-types';
 
-function Filter() {
-  const dispatch = useDispatch();
-  const filterValue = useSelector(state => state.filter);
+const filterInputId = nanoid();
 
-  const onFilterChange = e => {
-    dispatch(setFilter(e.currentTarget.value.toLowerCase()));
+
+  export const Filter = ({ setFilter, filter }) => {
+    return (
+      <>
+        <label className={css.label} htmlFor={filterInputId}>
+          Find contacts by name
+          <input
+            id={filterInputId}
+            onChange={e => setFilter(e.currentTarget.value)}
+            type="text"
+            value={filter}
+          />
+        </label></>
+    );
   };
-  return (
-    <label className={css.label}>
-      Find contacts by name
-      <input
-        type="text"
-        className={css.input}
-        value={filterValue}
-        onChange={onFilterChange}
-        name="filter"
-      />
-    </label>
-  );
-}
 
 
-export default Filter;
+Filter.propTypes = {
+  onChange: PropTypes.func,
+  filter: PropTypes.string,
+};

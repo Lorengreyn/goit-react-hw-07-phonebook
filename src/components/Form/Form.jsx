@@ -1,33 +1,46 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addContact } from '../../redux/ContactsSlice';
+import { useAddContactMutation, useGetContactsQuery } from '../../redux/ContactsSlice';
 import css from './Form.module.css';
+import { nanoid } from 'nanoid';
 
 export default function Form() {
-  const dispatch = useDispatch();
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
+  const [createContact] = useAddContactMutation();
+  const { data } = useGetContactsQuery();
 
- const handleInputChange = ({ currentTarget: { name, value } }) => {
-       switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        return;
-    }
+  const contacts = data;
+
+  const nameChange = e => {
+    setName(e.currentTarget.value);
   };
 
-   const handleSubmit = e => {
-      e.preventDefault();
-      dispatch(addContact({ name, number }));
-      setName('');
-      setNumber('');
+  const numberChange = e => {
+    setPhone(e.currentTarget.value);
+  };
+  const reset = () => {
+    setName('');
+    setPhone('');
+  };
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (contacts.find(contact => contact.name === name)) {
+      alert(`${name} is already in contacts`);
+      reset();
+      return;
+    }
+    const newContact = {
+      id: nanoid(),
+      name,
+      phone,
     };
+    createContact(newContact);
+    setName('');
+    setPhone('');
+    
+    
+  };
 
   return (
              <div>
@@ -42,7 +55,7 @@ export default function Form() {
                         title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
                         required
                         value={name}
-                        onChange={handleInputChange} />
+                        onChange={nameChange} />
                 </label>
                 <label className={css.label}>
                     Number
@@ -53,8 +66,8 @@ export default function Form() {
                         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                         title="Номер телефона должен состоять из цифр и может содержать пробелы, тире, круглые скобки, и может начинаться с +"
                         required
-                        value={number}
-                        onChange={handleInputChange}
+                        value={phone}
+                        onChange={numberChange}
                     />
                 </label>
                 <button type="submit" className={css.button}>
